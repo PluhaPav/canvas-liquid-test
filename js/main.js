@@ -16,12 +16,14 @@ const createPoints = (width, height) => {
   for (let index = 1; index <= randomParts; index++) {
     const widthGraph = Math.floor((width / randomParts) * index);
     if (index !== randomParts) {
+      let heightPoint = Math.round(height / Math.floor(Math.random() * 10 + 1));
+      console.log(heightPoint, height);
+      if (heightPoint > height) {
+        heightPoint = height;
+      }
       points.push({
         x: index === 1 ? 0 : widthGraph,
-        y:
-          index === 1
-            ? 0
-            : Math.round(height / Math.floor(Math.random() * 10 + 1)),
+        y: index === 1 ? 0 : heightPoint,
       });
     } else {
       points.push({
@@ -45,7 +47,7 @@ const maxPointCoordinates = () => {
   return { x: maxX, y: maxY };
 };
 
-const drawChart = (canvas, points, message = "draw") => {
+const drawChart = (canvas, points) => {
   if (canvas && canvas.getContext) {
     const ctx = canvas.getContext("2d");
     ctx.beginPath();
@@ -53,7 +55,7 @@ const drawChart = (canvas, points, message = "draw") => {
 
     for (var i = 0; i < points.length - 1; i++) {
       // Draw point
-      // ctx.arc(points[i].x, points[i].y, 10, 0, Math.PI * 2, false);
+      ctx.arc(points[i].x, points[i].y, 5, 0, Math.PI * 2, false);
 
       var x_mid = (points[i].x + points[i + 1].x) / 2;
       var y_mid = (points[i].y + points[i + 1].y) / 2;
@@ -95,13 +97,21 @@ const drawChart = (canvas, points, message = "draw") => {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    console.log(message);
   }
 };
 
+// Array.prototype.insert = function(index) {
+//   this.splice.apply(this, [index, 0].concat(
+//       Array.prototype.slice.call(arguments, 1)));
+//   return this;
+// };
+
 const mutationPoints = (direction = 1) => {
   return points.map((point) => {
-    point.y += Math.round(direction * (Math.random() * 10) * (point.y / 1000));
+    point.y += Math.round(direction * (Math.random() * 100) * (point.y / 1000));
+    if (point.y > windowHeight) {
+      point.y = windowHeight;
+    }
     return point;
   });
 };
@@ -113,23 +123,23 @@ document.addEventListener("DOMContentLoaded", () => {
   drawChart(canvas, points);
 });
 
-const redraw = (direction = 1) => {  
+const redraw = (direction = 1) => {
   if (canvas && canvas.getContext) {
     ctx.clearRect(0, 0, windowWidth, windowHeight);
     const newPoints = mutationPoints(direction);
-    drawChart(canvas, newPoints, "scroll");
+    drawChart(canvas, newPoints);
   }
-}
+};
 document.addEventListener("mousewheel", (e) => {
   const direction = e.wheelDelta >= 0 ? -1 : 1;
   redraw(direction);
 });
 document.addEventListener("keydown", (e) => {
   let direction = 1;
-  if(e.code === "ArrowUp"){
+  if (e.code === "ArrowUp") {
     direction = -1;
-  }else if(e.code === "ArrowDown"){
-    direction= 1;
+  } else if (e.code === "ArrowDown") {
+    direction = 1;
   }
   redraw(direction);
 });
