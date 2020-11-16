@@ -1,4 +1,3 @@
-
 const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
 const canvas = document.querySelector(".canvas");
@@ -19,7 +18,10 @@ const createPoints = (width, height) => {
     if (index !== randomParts) {
       points.push({
         x: index === 1 ? 0 : widthGraph,
-        y: index === 1 ? 0 : Math.round(height / Math.floor(Math.random() * 10 + 1)),
+        y:
+          index === 1
+            ? 0
+            : Math.round(height / Math.floor(Math.random() * 10 + 1)),
       });
     } else {
       points.push({
@@ -43,7 +45,7 @@ const maxPointCoordinates = () => {
   return { x: maxX, y: maxY };
 };
 
-const drawChart = (canvas, points, message = 'draw') => {
+const drawChart = (canvas, points, message = "draw") => {
   if (canvas && canvas.getContext) {
     const ctx = canvas.getContext("2d");
     ctx.beginPath();
@@ -93,7 +95,7 @@ const drawChart = (canvas, points, message = 'draw') => {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    console.log(message)
+    console.log(message);
   }
 };
 
@@ -111,11 +113,23 @@ document.addEventListener("DOMContentLoaded", () => {
   drawChart(canvas, points);
 });
 
-document.addEventListener("mousewheel", (e) => {
+const redraw = (direction = 1) => {  
   if (canvas && canvas.getContext) {
     ctx.clearRect(0, 0, windowWidth, windowHeight);
-    const direction = e.wheelDelta >= 0 ? -1 : 1;
     const newPoints = mutationPoints(direction);
-    drawChart(canvas, newPoints, 'scroll');
+    drawChart(canvas, newPoints, "scroll");
   }
+}
+document.addEventListener("mousewheel", (e) => {
+  const direction = e.wheelDelta >= 0 ? -1 : 1;
+  redraw(direction);
+});
+document.addEventListener("keydown", (e) => {
+  let direction = 1;
+  if(e.code === "ArrowUp"){
+    direction = -1;
+  }else if(e.code === "ArrowDown"){
+    direction= 1;
+  }
+  redraw(direction);
 });
